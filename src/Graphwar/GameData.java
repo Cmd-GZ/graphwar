@@ -115,6 +115,7 @@ public class GameData implements Runnable
 		currentTurn = -1;
 		turnTimeUp = false;
 		nextTurnSent = false;
+		nextPCs.clear();
 		
 		new Thread(this).start();
 		
@@ -151,7 +152,7 @@ public class GameData implements Runnable
     	{
     		Player player = itr.next();
     		
-    		if(player.isLocalPlayer())
+    		if(player.isLocalPlayer() && !(player instanceof ComputerPlayer))
     		{
     			return player;
     		}
