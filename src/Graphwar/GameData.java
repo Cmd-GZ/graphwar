@@ -1061,44 +1061,22 @@ public class GameData implements Runnable
 	}
 	
 	private void processFunction(Player player, String functionString) throws MalformedFunction
-	{				
+	{
 		function = new Function(functionString);
-								
+
 		player.getCurrentTurnSoldier().setFunction(functionString);
 								
 		//If player is in team 2 the function must go in the other direction
 		//and the obstacles are inverted
-		if(player.getTeam()==Constants.TEAM1)
-		{			
-			switch(gameMode)
-			{
-				case Constants.NORMAL_FUNC:
-					function.processFunctionRange(obstacle, players.toArray(new Player[0]), players.size(), currentTurn, false);	
-				break;
-				case Constants.FST_ODE:
-					function.processRK4Range(obstacle, players.toArray(new Player[0]), players.size(), currentTurn, false);
-				break;
-				case Constants.SND_ODE:
-					function.processRK42Range(obstacle, players.toArray(new Player[0]), players.size(), currentTurn, player.getCurrentTurnSoldier().getAngle(),false);
-				break;
-			}			
-		}
-		else
-		{
-			switch(gameMode)
-			{
-				case Constants.NORMAL_FUNC:
-					function.processFunctionRange(obstacle, players.toArray(new Player[0]), players.size(), currentTurn, true);	
-				break;
-				case Constants.FST_ODE:
-					function.processRK4Range(obstacle, players.toArray(new Player[0]), players.size(), currentTurn, true);
-				break;
-				case Constants.SND_ODE:
-					function.processRK42Range(obstacle, players.toArray(new Player[0]), players.size(), currentTurn, player.getCurrentTurnSoldier().getAngle(),true);
-				break;
-			}			
-		}
-		
+		function.processRange(
+			obstacle,
+			players.toArray(new Player[0]),
+			players.size(), currentTurn,
+			player.getTeam()==Constants.TEAM2,
+			Constants.NORMAL_FUNC,
+			player.getCurrentTurnSoldier().getAngle()
+		);
+
 		soldiersHit = new ArrayList<Soldier>();
 		int numPlayersHit = function.getNumPlayersHit();
 		for(int i=0; i<numPlayersHit; i++)

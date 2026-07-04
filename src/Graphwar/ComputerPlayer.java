@@ -169,19 +169,9 @@ public class ComputerPlayer extends Player implements Runnable
 		{
 			inverted = true;	
 		}
-    	
-		switch(graphwar.getGameData().getGameMode())
-		{
-			case Constants.NORMAL_FUNC:
-				func.processFunctionRange(graphwar.getGameData().getObstacle(), players, numPlayers, graphwar.getGameData().getCurrentTurnIndex(), inverted);	
-			break;
-			case Constants.FST_ODE:
-				func.processRK4Range(graphwar.getGameData().getObstacle(), players, numPlayers, graphwar.getGameData().getCurrentTurnIndex(), inverted);
-			break;
-			case Constants.SND_ODE:
-				func.processRK42Range(graphwar.getGameData().getObstacle(), players, numPlayers, graphwar.getGameData().getCurrentTurnIndex(), angle, inverted);
-			break;
-		}
+
+		func.processRange(graphwar.getGameData().getObstacle(), players, numPlayers, graphwar.getGameData().getCurrentTurnIndex(), inverted, graphwar.getGameData().getGameMode(), angle);
+
     	
     	double minDistSquared = 1000000;
     	
