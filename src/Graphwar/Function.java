@@ -253,7 +253,7 @@ public class Function
 		return false;
 	}
 
-	private void processRange(Obstacle obstacle, Player players[], int numPlayers, int currentTurn, boolean inverted, int gameMode, double angle)
+	public void processRange(Obstacle obstacle, Player players[], int numPlayers, int currentTurn, boolean inverted, int gameMode, double angle)
 	{
 		playersHit = new int[numPlayers*Constants.MAX_SOLDIERS_PER_PLAYER];
 		soldiersHit = new int[numPlayers*Constants.MAX_SOLDIERS_PER_PLAYER];
@@ -363,7 +363,6 @@ public class Function
 				}
 			}
 
-
 			if(obstacle.collidePoint((int)x, (int)y) || Double.isNaN(y) || Double.isInfinite(y))
 			{
 				numSteps = i;
@@ -373,21 +372,6 @@ public class Function
 
 		lastX = Constants.PLANE_LENGTH*valuesX[numSteps-1]/Constants.PLANE_GAME_LENGTH + Constants.PLANE_LENGTH/2;
 		lastY = -Constants.PLANE_LENGTH*valuesY[numSteps-1]/Constants.PLANE_GAME_LENGTH + Constants.PLANE_HEIGHT/2;
-	}
-
-	public void processFunctionRange(Obstacle obstacle, Player players[], int numPlayers, int currentTurn, boolean inverted)
-	{
-		processRange(obstacle, players, numPlayers, currentTurn, inverted, Constants.NORMAL_FUNC, 0);
-	}
-
-	public void processRK4Range(Obstacle obstacle, Player players[], int numPlayers, int currentTurn, boolean inverted)
-	{
-		processRange(obstacle, players, numPlayers, currentTurn, inverted, Constants.FST_ODE, 0);
-	}
-
-	public void processRK42Range(Obstacle obstacle, Player players[], int numPlayers, int currentTurn, double angle ,boolean inverted)
-	{
-		processRange(obstacle, players, numPlayers, currentTurn, inverted, Constants.SND_ODE, angle);
 	}
 
 	public double getLastX()
