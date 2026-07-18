@@ -304,18 +304,26 @@ public class Function
 		offSet = -polishFunc.evaluateFunction(valuesX[0],0,0) + valuesY[0];
 
 		numSteps = Constants.FUNC_MAX_STEPS;
+		boolean distanceTooBig = false;
+		double goalPositionY = 0;
 		for (int i = 1; i < Constants.FUNC_MAX_STEPS; i++)
 		{ // Compute the function
+
 			double tempStepSize = stepSize;
 
-			setNextValues(valuesX, valuesY, valuesDY, tempStepSize, i, gameMode);
+			if (!distanceTooBig)
+				setNextValues(valuesX, valuesY, valuesDY, tempStepSize, i, gameMode);
 
 			boolean endFunc = false;
 
 			for(int j = 0; Math.pow(valuesX[i]-valuesX[i-1], 2) + Math.pow(valuesY[i]-valuesY[i-1], 2) > Constants.FUNC_MAX_STEP_DISTANCE_SQUARED; j++)
 			{ // If the step is too big, halve it
+				if (distanceTooBig)
+					break;
 				if (valuesX[i] - valuesX[i-1] <= Constants.FUNC_MIN_X_STEP_DISTANCE)
 				{
+					distanceTooBig = true;
+					goalPositionY = valuesY[i];
 					if (gameMode == Constants.NORMAL_FUNC)
 						endFunc = true;
 					break;
@@ -328,6 +336,18 @@ public class Function
 			{
 				numSteps = i;
 				break;
+			}
+
+			if (distanceTooBig)
+			{
+				int sgn = (goalPositionY - valuesY[i-1] > 0)?1:-1;
+				valuesX[i] = valuesX[i-1];
+				valuesY[i] = valuesY[i-1] + sgn * (Math.sqrt(Constants.FUNC_MAX_STEP_DISTANCE_SQUARED - Math.pow(Constants.STEP_SIZE, 2)));
+				if (sgn * valuesY[i] > sgn * goalPositionY)
+				{
+					valuesY[i] = goalPositionY;
+					distanceTooBig = false;
+				}
 			}
 
 			double x = Constants.PLANE_LENGTH*valuesX[i]/Constants.PLANE_GAME_LENGTH + Constants.PLANE_LENGTH/2;
