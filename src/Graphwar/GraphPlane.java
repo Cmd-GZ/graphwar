@@ -87,7 +87,7 @@ public class GraphPlane extends JPanel implements ActionListener
 	{
 		this.graphwar = graphwar;
 		
-		//this.setOpaque(false);
+		this.setOpaque(false);
 		
 		MediaTracker tracker = new MediaTracker(graphwar);
 		
@@ -105,7 +105,7 @@ public class GraphPlane extends JPanel implements ActionListener
 		repaintBack = true;
 		nextMarker = false;
 		
-		background = new BufferedImage(Constants.PLANE_LENGTH, Constants.PLANE_HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
+		background = new BufferedImage(Constants.PLANE_LENGTH, Constants.PLANE_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
 		backg = background.createGraphics();
 		backg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
@@ -267,6 +267,10 @@ public class GraphPlane extends JPanel implements ActionListener
 		
 	private void drawBackground(Graphics2D g, boolean reversed)
 	{
+		// Clear the background to fully transparent before redrawing
+		g.setBackground(new Color(0,0,0,0));
+		g.clearRect(0, 0, Constants.PLANE_LENGTH, Constants.PLANE_HEIGHT);
+		
 		if(reversed)
 		{
 			g.drawImage(graphwar.getGameData().getObstacle().getImage(), 0, 0, Constants.PLANE_LENGTH, Constants.PLANE_HEIGHT, Constants.PLANE_LENGTH, 0, 0, Constants.PLANE_HEIGHT, null);

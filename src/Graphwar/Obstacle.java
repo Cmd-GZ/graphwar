@@ -16,7 +16,9 @@
 //  along with Graphwar.  If not, see <http://www.gnu.org/licenses/>.
 
 package Graphwar;
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -33,16 +35,19 @@ public class Obstacle
 	int expY;
 	int expRadius;
 	
+	// Color used for clearing obstacles (transparent)
+	private static final Color CLEAR_COLOR = new Color(0,0,0,0);
+	
 	Obstacle(int numCircles, int circleInfo[])
 	{
-		terrain = new BufferedImage(Constants.PLANE_LENGTH, Constants.PLANE_HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
+		terrain = new BufferedImage(Constants.PLANE_LENGTH, Constants.PLANE_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
 		
 		terrainGraphics = (Graphics2D)terrain.getGraphics();
 		terrainGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 
-		
-		terrainGraphics.setColor(Color.WHITE);
-		terrainGraphics.fillRect(0, 0, terrain.getWidth(), terrain.getHeight());
+		// Fill terrain with fully transparent background
+		terrainGraphics.setBackground(CLEAR_COLOR);
+		terrainGraphics.clearRect(0, 0, terrain.getWidth(), terrain.getHeight());
 		
 		terrainGraphics.setColor(Color.BLACK);
 		
@@ -55,10 +60,8 @@ public class Obstacle
 			terrainGraphics.fillOval(x-radius, y-radius, 2*radius, 2*radius);
 		}
 		
-		//transparent = new Color(0,0,0,0);
-		//terrainGraphics.setComposite(AlphaComposite.Src);
-		//terrainGraphics.setColor(transparent);
-		terrainGraphics.setColor(Color.WHITE);
+		// Set color to transparent for clearing explosions
+		terrainGraphics.setColor(CLEAR_COLOR);
 		
 		expX = 0;
 		expY = 0;
@@ -102,7 +105,8 @@ public class Obstacle
 		if(y<0 || y>=Constants.PLANE_HEIGHT)
 			return true;
 		
-		if(terrain.getRGB(x, y) != -1)
+		// Check if pixel is non-transparent (alpha != 0 = obstacle hit)
+		if((terrain.getRGB(x, y) & 0xFF000000) != 0)
 			return true;
 		
 		return false;
@@ -117,7 +121,11 @@ public class Obstacle
 	
 	public void explodePoint()
 	{
+		// Use AlphaComposite.Clear to erase obstacles (make pixels fully transparent)
+		Composite oldComposite = terrainGraphics.getComposite();
+		terrainGraphics.setComposite(AlphaComposite.Clear);
 		terrainGraphics.fillOval(expX-expRadius, expY-expRadius, expRadius*2, expRadius*2);
+		terrainGraphics.setComposite(oldComposite);
 	}
 	
 	public boolean soldierCollides(int x, int y, int radius)
@@ -139,15 +147,16 @@ public class Obstacle
 			return true;
 		}
 		
-		if( terrain.getRGB(x, y) == -1)
+		// Check if pixel is transparent (alpha == 0 = no obstacle)
+		if((terrain.getRGB(x, y) & 0xFF000000) == 0)
 		{	
-			if(terrain.getRGB(x+radius, y) == -1)
+			if((terrain.getRGB(x+radius, y) & 0xFF000000) == 0)
 			{
-				if(terrain.getRGB(x-radius, y) == -1)
+				if((terrain.getRGB(x-radius, y) & 0xFF000000) == 0)
 				{
-					if(terrain.getRGB(x, y+radius) == -1)
+					if((terrain.getRGB(x, y+radius) & 0xFF000000) == 0)
 					{
-						if(terrain.getRGB(x, y-radius) == -1)
+						if((terrain.getRGB(x, y-radius) & 0xFF000000) == 0)
 						{
 							return false;
 						}
